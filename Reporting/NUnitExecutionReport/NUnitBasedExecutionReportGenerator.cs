@@ -35,16 +35,31 @@ namespace TechTalk.SpecFlow.Reporting.NUnitExecutionReport
 
         public void GenerateAndTransformReport()
         {
-            var specFlowProject = MsBuildProjectReader.LoadSpecFlowProjectFromMsBuild(ReportParameters.ProjectFile);            
+            ReportElements.NUnitExecutionReport report = null;
+            SpecFlowProject specFlowProject = null;
 
-            var report = GenerateReport(specFlowProject);
+            if (!string.IsNullOrEmpty(ReportParameters.ProjectFile))
+            {
+                specFlowProject = MsBuildProjectReader.LoadSpecFlowProjectFromMsBuild(ReportParameters.ProjectFile);
+                report = GenerateReport(specFlowProject);
+            }
+            else
+            {
+                report = GenerateReport(ReportParameters.ProjectName);
+            }
+
             TransformReport(report, specFlowProject);
         }
 
         protected virtual ReportElements.NUnitExecutionReport GenerateReport(SpecFlowProject specFlowProject)
         {
+            return GenerateReport(specFlowProject.ProjectSettings.ProjectName);
+        }
+
+        protected virtual ReportElements.NUnitExecutionReport GenerateReport(string projectName)
+        {
             var report = new ReportElements.NUnitExecutionReport();
-            report.ProjectName = specFlowProject.ProjectSettings.ProjectName;
+            report.ProjectName = projectName;
             report.GeneratedAt = DateTime.Now.ToString("g", CultureInfo.InvariantCulture);
 
             XmlDocument xmlTestResult = LoadXmlTestResult();
