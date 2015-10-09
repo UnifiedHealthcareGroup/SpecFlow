@@ -27,9 +27,16 @@ namespace TechTalk.SpecFlow.Reporting.NUnitExecutionReport
             }
             else
             {
-                XsltHelper.TransformHtml(serializer, report, ReportType, 
-                                         ReportParameters.OutputFile, specFlowProject.Configuration.GeneratorConfiguration, 
+                if (specFlowProject == null)
+                {
+                    XsltHelper.TransformHtml(serializer, report, ReportType, ReportParameters.OutputFile);
+                }
+                else
+                {
+                    XsltHelper.TransformHtml(serializer, report, ReportType,
+                                         ReportParameters.OutputFile, specFlowProject.Configuration.GeneratorConfiguration,
                                          ReportParameters.XsltFile);
+                }
             }
         }
 

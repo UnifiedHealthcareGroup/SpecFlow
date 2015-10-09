@@ -26,7 +26,7 @@ namespace TechTalk.SpecFlow.Reporting
             }
         }
 
-        public static void TransformHtml(XmlSerializer serializer, object report, Type reportType, string outputFilePath, GeneratorConfiguration generatorConfiguration, string xsltFile)
+        public static void TransformHtml(XmlSerializer serializer, object report, Type reportType, string outputFilePath, GeneratorConfiguration generatorConfiguration = null, string xsltFile = null)
         {
             var xmlOutputWriter = new StringWriter();
             serializer.Serialize(xmlOutputWriter, report);
@@ -45,13 +45,16 @@ namespace TechTalk.SpecFlow.Reporting
             var xmlOutputReader = new XmlTextReader(new StringReader(xmlOutputWriter.ToString()));
 
             XsltArgumentList argumentList = new XsltArgumentList();
-            argumentList.AddParam("feature-language", "", generatorConfiguration.FeatureLanguage.Name);
-            argumentList.AddParam("tool-language", "", generatorConfiguration.ToolLanguage.Name);
-            
+            if (generatorConfiguration != null)
+            {
+                argumentList.AddParam("feature-language", "", generatorConfiguration.FeatureLanguage.Name);
+                argumentList.AddParam("tool-language", "", generatorConfiguration.ToolLanguage.Name);
+            }
+
             using (var xmlTextWriter = new XmlTextWriter(outputFilePath, Encoding.UTF8))
             {
-				xslt.Transform(xmlOutputReader, argumentList, xmlTextWriter, resourceResolver);
-            }            
+                xslt.Transform(xmlOutputReader, argumentList, xmlTextWriter, resourceResolver);
+            }
         }
 
         private static XmlReader GetTemplateReader(Type reportType, string reportName, string xsltFile)
